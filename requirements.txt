@@ -2,4 +2,4 @@
 
 pyttsx3
 streamlit
-text_to_speech.py
+text_to_speech
