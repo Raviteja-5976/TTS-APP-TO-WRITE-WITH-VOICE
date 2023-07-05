@@ -1,0 +1,5 @@
+# run this command to install all packages: pip install -r requirements.txt
+
+pyttsx3
+streamlit
+text_to_speech
