@@ -1,8 +1,6 @@
 import pyttsx3
 import streamlit as st
-
-engine = None
-is_speaking = False  # Global variable to track the speech state
+from pydub import AudioSegment
 
 def preprocess_text(text, speed):
     # Preprocessing logic
@@ -19,32 +17,21 @@ def preprocess_text(text, speed):
 
 def read_text(text, speed):
     # Read text logic
-    global engine, is_speaking
+    engine = pyttsx3.init()
+    engine.setProperty('rate', speed)
 
-    if engine is None:
-        engine = pyttsx3.init()
+    # Preprocess the text
+    processed_text = preprocess_text(text, speed)
 
-    if not is_speaking:
-        # Preprocess the text
-        processed_text = preprocess_text(text, speed)
+    # Speak the text
+    engine.save_to_file(processed_text, 'output.wav')
+    engine.runAndWait()
 
-        # Speak the text
-        engine.setProperty('rate', speed)
-        engine.say(processed_text)
-        engine.runAndWait()
+    # Convert WAV to MP3
+    audio = AudioSegment.from_wav('output.wav')
+    audio.export('output.mp3', format='mp3')
 
-        is_speaking = True
-
-def stop_speech():
-    # Stop speech logic
-    global engine, is_speaking
-
-    if engine is not None and is_speaking:
-        engine.stop()
-        is_speaking = False
-
-
-
+# Streamlit app
 st.title('WRITE WITH VOICE')
 st.header('by Raviteja')
 
@@ -53,15 +40,9 @@ st.caption('RECOMMENDED SPEED 120-180')
 
 user_input = st.text_area('Input')
 
-if (user_input==None) :
-    st.caption('please fill the input space')
-
-user_speed = st.number_input('Speed')
-
-if (user_speed==None):
-    st.caption('please enter the speed')
-
-if user_input and user_speed:
-    but=st.button('Speak')
-    if but:
-        read_text(user_input, user_speed) 
+if user_input:
+    user_speed = st.number_input('Speed')
+    if user_speed:
+        if st.button('Speak'):
+            read_text(user_input, user_speed)
+            st.audio('output.mp3', format='audio/mp3')
