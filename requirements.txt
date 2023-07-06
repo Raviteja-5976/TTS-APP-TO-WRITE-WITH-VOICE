@@ -2,4 +2,4 @@
 
 pyttsx3
 streamlit
-
+pydub
